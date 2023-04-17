@@ -7,8 +7,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class PersonRepositoryImplTest {
 
 
@@ -116,8 +114,13 @@ class PersonRepositoryImplTest {
         final Integer id = 9;
 
         Mono<Person> personMono = personFlux.filter(
-                person ->
-                        person.getId() == id).next();
+                        person ->
+                                person.getId() == id).single()
+                .doOnError(throwable -> {
+                    System.out.println("error occured in flux");
+                    System.out.println(throwable.toString());
+                    ;
+                });
 
         personMono.subscribe(person -> System.out.println(person.getFirstName())
         , throwable -> {
