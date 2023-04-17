@@ -90,5 +90,39 @@ class PersonRepositoryImplTest {
         );
     }
 
+    @Test
+    void testFilterByName() {
 
+         personRepository.findAll().filter(
+           person ->
+               person.getFirstName().equalsIgnoreCase("fiona"))
+                 .subscribe(person -> System.out.println(person));
+    }
+
+    @Test
+    void testGetById() {
+
+        Mono<Person> fionaMono = personRepository.findAll().filter(
+                person ->
+                        person.getId() == 2).next();
+
+        fionaMono.subscribe(person -> System.out.println(person.getFirstName()));
+    }
+
+    @Test
+    void testGetByIdNOtFound() {
+
+        Flux<Person> personFlux = personRepository.findAll();
+        final Integer id = 9;
+
+        Mono<Person> personMono = personFlux.filter(
+                person ->
+                        person.getId() == id).next();
+
+        personMono.subscribe(person -> System.out.println(person.getFirstName())
+        , throwable -> {
+                    System.out.println("Error occured in mono");
+                    System.out.println(throwable.toString());
+                });
+    }
 }
